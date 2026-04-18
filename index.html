@@ -51,20 +51,10 @@ button {
 @keyframes fall {
     to { transform: translateY(100vh); }
 }
-
-#countdown {
-    font-size: 22px;
-    margin-top: 20px;
-}
 </style>
 </head>
 
 <body>
-
-<!-- AUDIO -->
-<audio id="bgmusic">
-    <source src="/mnt/data/Boston - More Than a Feeling (Official HD Video).mp3" type="audio/mpeg">
-</audio>
 
 <!-- SCREEN 0 -->
 <div class="screen active" id="s0">
@@ -103,18 +93,35 @@ button {
     <h1>Честито, поканен си на моя бал!</h1>
     <h2>14:00 ч. в хотел Дукеса (над Морската)</h2>
 
-    <div id="countdown"></div>
+    <div id="countdown" style="margin-top:20px; font-size:22px;"></div>
 </div>
 
+<!-- MUSIC -->
+<div id="player" style="display:none;"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+
 <script>
-// 🎵 МУЗИКА
-function playMusic() {
-    let audio = document.getElementById("bgmusic");
-    audio.currentTime = 48; // старт от 48 сек
-    audio.play();
+let player;
+
+// 🎵 музика
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        height: '0',
+        width: '0',
+        videoId: 't4QK8RxCAwo',
+        playerVars: {
+            autoplay: 0,
+            controls: 0,
+            start: 48
+        }
+    });
 }
 
-// ⏳ БРОЯЧ
+function playMusic() {
+    if (player) player.playVideo();
+}
+
+// ⏳ брояч
 let balDate = new Date("May 24, 2026 14:00:00").getTime();
 
 setInterval(() => {
@@ -126,11 +133,13 @@ setInterval(() => {
     let minutes = Math.floor((diff / (1000*60)) % 60);
     let seconds = Math.floor((diff / 1000) % 60);
 
-    document.getElementById("countdown").innerHTML =
-        `Остават ${days} дни ${hours} ч ${minutes} мин ${seconds} сек`;
+    let el = document.getElementById("countdown");
+    if (el) {
+        el.innerHTML = `Остават ${days} дни ${hours} ч ${minutes} мин ${seconds} сек`;
+    }
 }, 1000);
 
-// НАВИГАЦИЯ
+// навигация
 function next(n) {
     document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
     document.getElementById("s" + n).classList.add("active");
@@ -153,14 +162,14 @@ function finish() {
     confetti();
 }
 
-// 🎉 КОНФЕТИ
+// 🎉 конфети
 function confetti() {
-    for (let i = 0; i < 120; i++) {
+    for (let i=0;i<120;i++){
         let c = document.createElement("div");
         c.classList.add("confetti");
-        c.style.left = Math.random() * 100 + "vw";
+        c.style.left = Math.random()*100+"vw";
         c.style.background = `hsl(${Math.random()*360},100%,50%)`;
-        c.style.animationDuration = (Math.random()*3+2) + "s";
+        c.style.animationDuration = (Math.random()*3+2)+"s";
         document.body.appendChild(c);
     }
 }
