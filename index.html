@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<title>Покана</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: black;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+}
+
+.screen {
+    display: none;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.active {
+    display: flex;
+}
+
+button {
+    margin: 10px;
+    padding: 15px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.big {
+    font-size: 22px;
+    padding: 20px 40px;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    to { transform: translateY(100vh); }
+}
+
+#countdown {
+    font-size: 22px;
+    margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUDIO -->
+<audio id="bgmusic">
+    <source src="/mnt/data/Boston - More Than a Feeling (Official HD Video).mp3" type="audio/mpeg">
+</audio>
+
+<!-- SCREEN 0 -->
+<div class="screen active" id="s0">
+    <h2>Щом си стигнал дотук,<br>значи съм се научил да броя до 12!</h2>
+    <button class="big" onclick="playMusic(); next(1)">Ела за малко</button>
+</div>
+
+<!-- SCREEN 1 -->
+<div class="screen" id="s1">
+    <h2>Ходи ли ти се на бал?</h2>
+    <button onclick="next(2)">Да</button>
+    <button onclick="next(2)">Не</button>
+</div>
+
+<!-- SCREEN 2 -->
+<div class="screen" id="s2">
+    <h2>Имаш шанс да ме видиш с костюм, искаш ли?</h2>
+    <button onclick="next(3)">Да</button>
+    <button onclick="wrong()">Не</button>
+    <button onclick="next(3)">Абе може</button>
+
+    <div id="msg"></div>
+</div>
+
+<!-- SCREEN 3 -->
+<div class="screen" id="s3">
+    <h2>Пиеш ли?</h2>
+    <button onclick="finish()">Да</button>
+    <button onclick="sure()">Не</button>
+
+    <div id="sureBox"></div>
+</div>
+
+<!-- FINAL -->
+<div class="screen" id="final" style="background:white; color:black;">
+    <h1>Честито, поканен си на моя бал!</h1>
+    <h2>14:00 ч. в хотел Докеса (над Морската)</h2>
+
+    <div id="countdown"></div>
+</div>
+
+<script>
+// 🎵 МУЗИКА
+function playMusic() {
+    let audio = document.getElementById("bgmusic");
+    audio.currentTime = 48; // старт от 48 сек
+    audio.play();
+}
+
+// ⏳ БРОЯЧ
+let balDate = new Date("May 24, 2026 14:00:00").getTime();
+
+setInterval(() => {
+    let now = new Date().getTime();
+    let diff = balDate - now;
+
+    let days = Math.floor(diff / (1000*60*60*24));
+    let hours = Math.floor((diff / (1000*60*60)) % 24);
+    let minutes = Math.floor((diff / (1000*60)) % 60);
+    let seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("countdown").innerHTML =
+        `Остават ${days} дни ${hours} ч ${minutes} мин ${seconds} сек`;
+}, 1000);
+
+// НАВИГАЦИЯ
+function next(n) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById("s" + n).classList.add("active");
+}
+
+function wrong() {
+    document.getElementById("msg").innerHTML = "Моля?";
+}
+
+function sure() {
+    document.getElementById("sureBox").innerHTML = `
+        <h3>Сигурен ли си?</h3>
+        <button onclick="finish()">За теб бих</button>
+    `;
+}
+
+function finish() {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById("final").classList.add("active");
+    confetti();
+}
+
+// 🎉 КОНФЕТИ
+function confetti() {
+    for (let i = 0; i < 120; i++) {
+        let c = document.createElement("div");
+        c.classList.add("confetti");
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.background = `hsl(${Math.random()*360},100%,50%)`;
+        c.style.animationDuration = (Math.random()*3+2) + "s";
+        document.body.appendChild(c);
+    }
+}
+</script>
+
+</body>
+</html>
